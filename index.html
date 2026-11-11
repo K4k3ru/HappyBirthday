@@ -170,7 +170,7 @@ let out=false;
 $('blow').onclick=function(){
   out=!out;
   $('cake').classList.toggle('out',out);
-  this.textContent=out?'Relight the candles 🔥':'Blow out the candles 💨';
+  this.textContent=out?'Relight the candles':'Blow out the candles';
   $('wish').textContent=out?'Your wish is on its way. ✨':'Make a wish, then blow out the candles.';
   if(out){burst(W/2,H/2,140);rain(60)}
 };
