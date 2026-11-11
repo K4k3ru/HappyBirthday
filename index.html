@@ -24,8 +24,10 @@ main{position:relative;z-index:2;width:100%;max-width:none;margin:0 auto;padding
 @keyframes hop{0%,100%{transform:translateY(0) rotate(-6deg)}50%{transform:translateY(-18px) rotate(6deg)}}
 h1,h2{font-family:"Bagel Fat One","Arial Rounded MT Bold",system-ui,sans-serif;font-weight:400;margin:0;line-height:1.05}
 .gate h1{font-size:clamp(2.2rem,8vw,3.4rem)}
+#countdown{margin:0;color:var(--muted);font-weight:800}
 input[type=text]{width:min(100%,340px);padding:14px 18px;border-radius:999px;border:3px solid var(--ink);background:var(--panel);color:var(--ink);font:inherit;text-align:center}
 .btn{font:800 1rem Nunito,system-ui,sans-serif;color:#2a0f3d;background:var(--yellow);border:3px solid var(--ink);border-radius:999px;padding:12px 24px;cursor:pointer;box-shadow:4px 4px 0 var(--ink);transition:transform .12s,box-shadow .12s}
+.btn:disabled{opacity:.65;cursor:not-allowed;transform:none;box-shadow:4px 4px 0 var(--ink)}
 .btn:hover{transform:translate(-1px,-1px);box-shadow:6px 6px 0 var(--ink)}
 .btn:active{transform:translate(3px,3px);box-shadow:1px 1px 0 var(--ink)}
 .btn.alt{background:var(--pink);color:#fff}
@@ -69,7 +71,8 @@ footer{margin-top:24px;color:var(--muted);font-size:.9rem}
     <div class="gift" aria-hidden="true">🎁</div>
     <h1>Happy Birthday, Mariane!</h1>
     
-    <button id="go" class="btn alt">Open the surprise</button>
+    <p id="countdown" role="timer" aria-live="polite"></p>
+    <button id="go" class="btn alt" disabled>Locked until midnight 🔒</button>
   </section>
 
   <section id="party" class="party-layout" hidden>
@@ -118,6 +121,7 @@ footer{margin-top:24px;color:var(--muted);font-size:.9rem}
 <script>
 const $=id=>document.getElementById(id);
 const COL=['#ff3d8b','#ffc933','#6a3df0','#0f9d8a','#ff7a1a','#3d9bff'];
+const unlockAt=new Date(2026,10,12,0,0,0);
 const cv=$('fx'),cx=cv.getContext('2d');
 let P=[],run=false,W=0,H=0;
 function size(){const d=window.devicePixelRatio||1;W=innerWidth;H=innerHeight;cv.width=W*d;cv.height=H*d;cx.setTransform(d,0,0,d,0,0)}
@@ -164,6 +168,26 @@ function start(){
   scrollTo(0,0);
 }
 $('go').onclick=start;
+
+function updateCountdown(){
+  const remaining=unlockAt-Date.now();
+  const button=$('go'),countdown=$('countdown');
+  if(remaining<=0){
+    countdown.textContent='The surprise is ready! 🎉';
+    button.disabled=false;
+    button.textContent='Open the surprise';
+    return;
+  }
+  const totalSeconds=Math.ceil(remaining/1000);
+  const days=Math.floor(totalSeconds/86400);
+  const hours=Math.floor(totalSeconds%86400/3600);
+  const minutes=Math.floor(totalSeconds%3600/60);
+  const seconds=totalSeconds%60;
+  countdown.textContent=days+'d '+String(hours).padStart(2,'0')+'h '+String(minutes).padStart(2,'0')+'m '+String(seconds).padStart(2,'0')+'s until the surprise';
+  button.disabled=true;
+}
+updateCountdown();
+setInterval(updateCountdown,1000);
 
 
 let out=false;
